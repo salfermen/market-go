@@ -1,0 +1,1 @@
+//Instancia base de Axios con la URL de tu API e interceptores (para inyectar el token JWT en cada petición).

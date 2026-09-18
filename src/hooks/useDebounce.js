@@ -1,0 +1,1 @@
+//Esencial para el archivo Search.js, evita saturar la API escribiendo letra por letra.

@@ -1,0 +1,1 @@
+//Cajas de texto estandarizadas que acepten props para mostrar mensajes de error (vital para Login.js y CreateAccount.js).

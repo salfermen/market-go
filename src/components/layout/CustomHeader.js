@@ -1,0 +1,1 @@
+//Una barra superior personalizada con botón de retroceso o título, ideal si decides ocultar el header por defecto de React Navigation.

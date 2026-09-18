@@ -1,0 +1,1 @@
+//Lógica para agregar, eliminar y calcular el total de los ítems del carrito.

@@ -1,0 +1,1 @@
+//Tarjeta de resumen para el historial de compras del cliente o el panel de gestión del vendedor.

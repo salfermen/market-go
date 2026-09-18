@@ -1,0 +1,1 @@
+//Las pastillas o íconos visuales para filtrar categorías.

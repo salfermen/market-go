@@ -1,0 +1,1 @@
+//La tarjeta del producto con foto, precio y título. Se reutilizará en ShopClient, Wishlist y SellerProducts.

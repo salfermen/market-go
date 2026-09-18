@@ -1,0 +1,1 @@
+//Funciones para formatear precios a moneda local o dar formato a fechas.

@@ -1,0 +1,1 @@
+//Un indicador de carga centralizado.

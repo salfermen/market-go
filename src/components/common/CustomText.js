@@ -1,0 +1,1 @@
+//Un componente de texto base que ya integre las fuentes de tu proyecto (evita usar el <Text> nativo directamente para mantener la consistencia).

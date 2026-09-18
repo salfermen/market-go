@@ -1,0 +1,1 @@
+//Por el nombre, esto es un componente visual reutilizable, no una pantalla completa. Debe ir aquí

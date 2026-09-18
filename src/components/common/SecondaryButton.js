@@ -1,0 +1,1 @@
+//Botones estándar con manejo de estados (normal, presionado, cargando, deshabilitado).

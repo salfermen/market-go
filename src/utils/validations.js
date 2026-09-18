@@ -1,0 +1,1 @@
+//Expresiones regulares para validar correos, contraseñas fuertes o números de teléfono en los formularios.

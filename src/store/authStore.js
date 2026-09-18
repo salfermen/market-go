@@ -1,0 +1,1 @@
+//Guarda los datos del usuario logueado, su rol (cliente/vendedor) y el token de sesión.

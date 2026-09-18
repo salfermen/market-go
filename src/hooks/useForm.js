@@ -1,0 +1,1 @@
+//Para centralizar el manejo de inputs y errores en pantallas como Login o CreateAccount.

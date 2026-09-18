@@ -1,0 +1,1 @@
+//Un contenedor global que implemente SafeAreaView y los márgenes estándar de la app. Envuelves todas tus pantallas en él para garantizar que el contenido no se solape con el notch o la barra de estado del teléfono.

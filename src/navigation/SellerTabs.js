@@ -1,0 +1,1 @@
+//Flujo de vendedor: Navegación de pestañas inferiores (Dashboard, Inventario, Ventas).

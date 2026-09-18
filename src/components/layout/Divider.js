@@ -1,0 +1,1 @@
+//Una línea de separación semántica y estandarizada para dividir secciones en el perfil o en los detalles del producto.

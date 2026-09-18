@@ -1,0 +1,1 @@
+//Flujo de comprador: Navegación de pestañas inferiores (Home, Carrito, Perfil).

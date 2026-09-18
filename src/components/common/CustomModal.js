@@ -1,0 +1,1 @@
+//Un modal base reutilizable para confirmaciones (ej. "¿Seguro que deseas vaciar el carrito?").

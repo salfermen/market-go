@@ -1,0 +1,1 @@
+//Variables de colores (primarios, secundarios, fondos, errores).
