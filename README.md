@@ -6,7 +6,7 @@ Aplicación móvil que funciona como tienda virtual: conecta a **vendedores pequ
 > Segunda entrega: análisis, diseño UX/UI e implementación inicial del frontend.
 > El backend en **Ktor** se integra en la siguiente entrega; por ahora la app usa **datos simulados**.
 
-**Equipo:** Laura Daniela Galindo Casallas · Salim Ferez Mendez · Juna Sebastián Salas Castillo
+**Equipo:** Laura Daniela Galindo Casallas · Salim Ferez Mendez · Juan Sebastián Salas Castillo
 
 ---
 
