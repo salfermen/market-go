@@ -1,0 +1,71 @@
+### Pruebas de la API de MarketGO
+### En IntelliJ: abre este archivo y pulsa el ▶ verde junto a cada petición.
+### Ejecuta primero el LOGIN: el token se guarda solo y lo usan las demás peticiones.
+
+### 1. Estado del servidor
+GET http://localhost:8080/api/health
+
+### 2. Login (cuenta de demostración con tienda)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email": "ramona@marketgo.co", "password": "Market123" }
+
+> {% client.global.set("token", response.body.token); %}
+
+### 3. Catálogo completo
+GET http://localhost:8080/api/products
+
+### 4. Catálogo filtrado: zapatos, del más barato al más caro
+GET http://localhost:8080/api/products?category=zapatos&sort=price_asc
+
+### 5. Detalle de un producto (incluye la tienda)
+GET http://localhost:8080/api/products/p1
+
+### 6. Categorías
+GET http://localhost:8080/api/categories
+
+### 7. Crear un pedido (requiere el token del paso 2)
+POST http://localhost:8080/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "items": [
+    { "productId": "p2", "quantity": 2, "color": "Negro" },
+    { "productId": "p7", "quantity": 1 }
+  ],
+  "address": { "fullName": "Ramona Díaz", "city": "Bogotá", "address": "Cra. 7 # 45-10" },
+  "shippingMethod": "express",
+  "paymentMethod": "card",
+  "voucherCode": "BIENVENIDO10"
+}
+
+### 8. Mis pedidos
+GET http://localhost:8080/api/orders/me
+Authorization: Bearer {{token}}
+
+### 9. Panel del vendedor: pedidos recibidos por la tienda s1
+GET http://localhost:8080/api/stores/s1/orders
+Authorization: Bearer {{token}}
+
+### 10. Avanzar un pedido (cambia MG-1049 por el id que devolvió el paso 7)
+PATCH http://localhost:8080/api/orders/MG-1049/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "status": "preparing" }
+
+### 11. Crear un producto en la tienda
+POST http://localhost:8080/api/stores/s1/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Falda midi", "price": 79900, "stock": 5, "category": "ropa", "description": "Falda de lino" }
+
+### 12. Resumen de ventas
+GET http://localhost:8080/api/stores/s1/sales
+Authorization: Bearer {{token}}
+
+### 13. Error esperado (401): sin token
+GET http://localhost:8080/api/orders/me

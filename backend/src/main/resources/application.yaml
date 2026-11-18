@@ -1,0 +1,26 @@
+ktor:
+  deployment:
+    port: "$PORT:8080"
+    host: "0.0.0.0"
+  application:
+    modules:
+      - com.marketgo.ApplicationKt.module
+
+firebase:
+  # Ruta de la llave de la cuenta de servicio (Firebase Console › Configuración › Cuentas de servicio)
+  credentialsPath: "$FIREBASE_CREDENTIALS:serviceAccountKey.json"
+  projectId: "$FIREBASE_PROJECT_ID:"
+
+jwt:
+  # En producción define JWT_SECRET con un valor largo y aleatorio
+  secret: "$JWT_SECRET:marketgo-secreto-solo-para-desarrollo-cambialo"
+  issuer: "marketgo-api"
+  audience: "marketgo-app"
+  realm: "MarketGO"
+  expiresInDays: 7
+
+app:
+  # true = si Firestore está vacío, carga los datos de demostración (mismos de mockData.js)
+  seed: "$SEED_DATA:true"
+  # Código fijo de recuperación de contraseña para la demo. Déjalo vacío para generar códigos aleatorios.
+  recoveryFixedCode: "$RECOVERY_FIXED_CODE:1234"
