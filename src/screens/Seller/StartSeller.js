@@ -8,6 +8,7 @@ import SectionHeader from '../../components/layout/SectionHeader';
 import CustomText from '../../components/common/CustomText';
 import PrimaryButton from '../../components/common/PrimaryButton';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
+import EmptyState from '../../components/common/EmptyState';
 import StatCard from '../../components/specific/StatCard';
 import BarChart from '../../components/specific/BarChart';
 import DonutChart from '../../components/specific/DonutChart';
@@ -25,6 +26,14 @@ export default function StartSeller({ navigation }) {
   const { user } = useAuth();
   const seller = useSeller();
   const { store } = seller;
+
+  if (seller.error && !seller.loading) {
+    return (
+      <ScreenWrapper background={colors.surface} padded={false} header={<SellerHeader section="Panel" title="Resumen" />}>
+        <EmptyState icon={ChartColumn} title="No pudimos cargar tu panel" message={seller.error} actionText="Reintentar" onAction={seller.reload} />
+      </ScreenWrapper>
+    );
+  }
 
   if (seller.loading || !seller.sales) {
     return (

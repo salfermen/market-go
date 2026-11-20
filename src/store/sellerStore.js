@@ -29,12 +29,14 @@ export function SellerProvider({ children }) {
   const [sales, setSales] = useState(null);
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     if (!storeId || mode !== 'seller') return undefined;
     let active = true;
     setLoading(true);
+    setError(null);
     Promise.all([
       productsApi.getStoreProducts(storeId),
       ordersApi.getStoreOrders(storeId),
@@ -50,6 +52,7 @@ export function SellerProvider({ children }) {
         setReviews(r);
         setSales(s);
       })
+      .catch((e) => active && setError(e.message))
       .finally(() => active && setLoading(false));
     return () => {
       active = false;
@@ -105,6 +108,7 @@ export function SellerProvider({ children }) {
       reviews,
       sales,
       loading,
+      error,
       inventory,
       activeProducts: active.length,
       pendingOrders: orders.filter((o) => o.status === 'new' || o.status === 'preparing').length,
@@ -118,7 +122,7 @@ export function SellerProvider({ children }) {
       replyToReview,
       reload: () => setReloadKey((k) => k + 1),
     };
-  }, [storeId, store, products, orders, reviews, sales, loading, addProduct, editProduct, toggleProductActive, advanceOrder, replyToReview]);
+  }, [storeId, store, products, orders, reviews, sales, loading, error, addProduct, editProduct, toggleProductActive, advanceOrder, replyToReview]);
 
   return <SellerContext.Provider value={value}>{children}</SellerContext.Provider>;
 }

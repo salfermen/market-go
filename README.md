@@ -34,6 +34,8 @@ Aplicación móvil que funciona como tienda virtual: conecta a **vendedores pequ
 ## Requisitos
 
 - **Node.js 20 LTS o superior** (recomendado 22 LTS) y **npm**.
+- **JDK 21** (p. ej. Eclipse Temurin) para el backend. Gradle no hace falta instalarlo: lo trae el proyecto.
+- **Java en el PATH** también lo usa la base de datos local (emulador de Firestore, se descarga solo la primera vez).
 - Una de estas opciones para ejecutar la app:
   - **Expo Go** actualizado en un celular Android/iOS (compatible con SDK 58), en la misma red Wi-Fi que el computador.
   - **Emulador de Android** (Android Studio → Device Manager) o simulador de iOS (solo macOS).
@@ -51,7 +53,7 @@ npm install
 
 ## Variables de entorno
 
-Copia el ejemplo (opcional en esta entrega; sin `.env` se usan los valores por defecto):
+No hace falta crear `.env`: los valores por defecto ya conectan la app con el backend. Cópialo solo si necesitas cambiar algo:
 
 ```bash
 cp .env.example .env
@@ -59,16 +61,24 @@ cp .env.example .env
 
 | Variable | Valor por defecto | Descripción |
 |---|---|---|
-| `EXPO_PUBLIC_API_URL` | `http://10.0.2.2:8080/api` | URL base del backend Ktor. `10.0.2.2` es el *localhost* del PC visto desde el emulador de Android. |
-| `EXPO_PUBLIC_USE_MOCK` | `true` | `true` = datos simulados; `false` = API real. |
+| `EXPO_PUBLIC_API_URL` | IP del PC que ejecuta Expo, puerto 8080 | URL base del backend Ktor. Se detecta sola (celular, emulador y web); defínela solo si el backend corre en otro equipo. |
+| `EXPO_PUBLIC_USE_MOCK` | `false` | `false` = API real; `true` = datos simulados sin backend. |
 
 > Nunca subas el archivo `.env` al repositorio (ya está en `.gitignore`).
 
 ## Ejecución
 
+Se usan **tres terminales** abiertas en la raíz del proyecto, en este orden:
+
 ```bash
-npx expo start
+npm run db      # 1. Base de datos local (emulador de Firestore en 127.0.0.1:8085, panel en http://127.0.0.1:4000)
+npm run api     # 2. Backend Ktor en http://localhost:8080/api (la primera vez tarda en descargar dependencias)
+npx expo start  # 3. App móvil
 ```
+
+- `npm run db` guarda los datos en `backend/.firestore-data` al cerrarlo con **Ctrl+C** y los recupera al volver a abrirlo. La primera vez, el backend la llena con los datos de demostración.
+- `npm run api` usa la base local mientras no exista la llave de Firebase. Para usar el proyecto real de Firebase, coloca `backend/serviceAccountKey.json` (ver [`backend/README.md`](backend/README.md)); entonces no necesitas `npm run db`.
+- Comprueba el backend en <http://localhost:8080/api/health> → `{"status":"ok"}`.
 
 En la terminal aparecerá un código QR y un menú:
 
@@ -92,7 +102,7 @@ Si el celular no conecta por la red local, usa: `npx expo start --tunnel`.
 | Cupones | `PRIMERA15`, `BIENVENIDO10`, `LEAL20`, `ENVIOGRATIS` |
 | Tarjeta que se rechaza (para ver el error) | `4000 0000 0000 0002` (cualquier fecha futura y CVV) |
 
-También puedes registrar una cuenta nueva: los datos viven en memoria y se reinician al recargar la app.
+También puedes registrar una cuenta nueva: queda guardada en la base de datos.
 
 ### Recorrido sugerido para la demostración
 
@@ -146,21 +156,6 @@ Pantallas → componentes + hooks + store → src/api → (USE_MOCK) mockData.js
 - **AppNavigator** decide el flujo según la sesión (`user`) y el modo (`client` / `seller`): al iniciar o cerrar sesión la navegación cambia sola.
 - **Las pantallas nunca llaman a `fetch` directamente**: usan funciones de `src/api`, que hoy responden con datos simulados y mañana con Ktor.
 
-## Conectar la app con el backend
-
-1. Arranca la API (detalles en [`backend/README.md`](backend/README.md)):
-
-   ```bash
-   cd backend
-   ./gradlew run        # Windows: gradlew.bat run
-   ```
-
-   Necesita JDK 21 y la llave `backend/serviceAccountKey.json` de Firebase (no se sube a GitHub), o el emulador de Firestore.
-2. En la raíz del proyecto crea `.env` a partir de `.env.example` con `EXPO_PUBLIC_USE_MOCK=false` y la URL de la API.
-3. Reinicia Expo limpiando caché para que lea las variables: `npx expo start -c`.
-
-Usuarios de prueba (cargados por el *seed*): `ramona@marketgo.co` (tiene la tienda *Moda Ramona*) y `juan@marketgo.co`, ambos con contraseña `Market123`.
-
 ## API (implementada en `backend/`)
 
 | Módulo | Endpoints |
@@ -175,7 +170,7 @@ Todas las peticiones autenticadas envían `Authorization: Bearer <token>`.
 
 ## Limitaciones conocidas (entrega 2)
 
-- En modo simulado los datos se pierden al recargar la app; con `EXPO_PUBLIC_USE_MOCK=false` se guardan en Firestore.
+- La base local (`npm run db`) es para desarrollo; en producción el backend debe usar un proyecto de Firebase con su llave.
 - Las imágenes de productos son ilustraciones provisionales (ícono de la categoría); el backend entregará las fotos.
 - Pagos, notificaciones y exportación de reportes están simulados.
 
@@ -187,3 +182,6 @@ Todas las peticiones autenticadas envían `Authorization: Bearer <token>`.
 | El celular no encuentra el servidor | Mismo Wi-Fi que el PC o `npx expo start --tunnel`. |
 | Errores raros después de cambiar dependencias | `npx expo start -c` (limpia la caché de Metro). |
 | Versiones incompatibles | `npx expo install --fix`. |
+| La app dice "No hay conexión con el servidor" | Revisa que `npm run api` esté corriendo. En celular físico, permite Java en el Firewall de Windows (redes privadas) para el puerto 8080. |
+| `npm run api` dice "No hay conexión con la base de datos local" | Abre primero `npm run db`. |
+| `Address already in use` / puerto 8080 ocupado | Otro programa usa el 8080 (p. ej. un emulador de Firestore abierto sin `firebase.json`). Ciérralo y usa `npm run db`, que lo abre en el 8085. |

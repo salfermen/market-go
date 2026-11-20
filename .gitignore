@@ -45,3 +45,7 @@ yarn-error.*
 
 # entregables generados (PDF/ZIP para Moodle)
 entrega/
+
+# Firebase: logs del emulador y datos locales de desarrollo
+*-debug.log
+backend/.firestore-data/

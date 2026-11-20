@@ -9,7 +9,10 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.cloud.FirestoreClient
 import io.ktor.server.application.*
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
+import java.net.InetSocketAddress
+import java.net.Socket
 
 /**
  * Conexión con Firebase / Cloud Firestore.
@@ -29,6 +32,7 @@ fun Application.configureFirebase(): Firestore {
         val projectId = System.getenv("GOOGLE_CLOUD_PROJECT")
             ?: config.propertyOrNull("firebase.projectId")?.getString()?.ifBlank { null }
             ?: "marketgo-dev"
+        requireReachable(emulatorHost)
         log.info("Usando el emulador de Firestore en $emulatorHost (proyecto $projectId)")
         val channel = FirestoreOptions.getDefaultTransportChannelProviderBuilder()
             .setEndpoint(emulatorHost)
@@ -69,4 +73,18 @@ private fun openCredentials(path: String): InputStream? {
         if (file.exists()) return file.inputStream()
     }
     return Thread.currentThread().contextClassLoader.getResourceAsStream("serviceAccountKey.json")
+}
+
+/** Falla con un mensaje claro si la base local no está abierta (en vez de quedarse esperando). */
+private fun requireReachable(hostAndPort: String) {
+    val host = hostAndPort.substringBeforeLast(":")
+    val port = hostAndPort.substringAfterLast(":").toIntOrNull() ?: return
+    try {
+        Socket().use { it.connect(InetSocketAddress(host, port), 2000) }
+    } catch (e: IOException) {
+        error(
+            "No hay conexión con la base de datos local en $hostAndPort. " +
+                "Ábrela en otra terminal desde la raíz del proyecto con: npm run db"
+        )
+    }
 }

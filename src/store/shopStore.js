@@ -55,6 +55,7 @@ export function ShopProvider({ children }) {
     setOrdersLoading(true);
     getMyOrders(user.id)
       .then((list) => active && setOrders(list))
+      .catch(() => active && setOrders([]))
       .finally(() => active && setOrdersLoading(false));
     return () => {
       active = false;

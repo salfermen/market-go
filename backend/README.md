@@ -81,7 +81,15 @@ cd backend
 ./gradlew run
 ```
 
-En Windows: `gradlew.bat run`. También se puede abrir la carpeta `backend` en IntelliJ y ejecutar `Application.kt`.
+En Windows: `gradlew.bat run`. Desde la raíz del proyecto también sirve `npm run api`.
+
+**¿Qué base de datos usa?**
+
+- Si existe `backend/serviceAccountKey.json` (o `FIREBASE_CREDENTIALS`), usa el proyecto real de Firebase.
+- Si no, `gradlew run` se conecta solo a la **base local** (emulador de Firestore en `127.0.0.1:8085`).
+  Ábrela antes, desde la raíz del proyecto, con `npm run db` (configuración en `firebase.json`;
+  los datos se guardan en `backend/.firestore-data` al cerrarla con Ctrl+C). Si no está abierta, el
+  backend se detiene con un mensaje que lo indica.
 
 Al arrancar por primera vez, si la colección `users` está vacía, se cargan los datos de demostración
 (mismos usuarios, tiendas, productos, reseñas, cupones y pedidos que tenía la app). Las fechas de los pedidos
@@ -179,18 +187,17 @@ Las consultas usan solo filtros de igualdad/`array-contains`, así que **no hay 
 Las pruebas usan el **emulador de Firestore** (nunca tocan la base real):
 
 ```bash
-npm install -g firebase-tools
-firebase emulators:start --only firestore --project marketgo-test
+npm run db          # en la raíz del proyecto (emulador en 127.0.0.1:8085)
 ```
 
 En otra terminal:
 
 ```bash
 cd backend
-FIRESTORE_EMULATOR_HOST=127.0.0.1:8085 ./gradlew test
+./gradlew test      # Windows: gradlew.bat test
 ```
 
-Con la misma variable, `./gradlew run` levanta el backend completo sobre el emulador, útil para desarrollar sin gastar cuota de Firebase.
+Las pruebas usan el proyecto `marketgo-test` dentro del emulador, separado de los datos de desarrollo (`marketgo-dev`).
 
 ## Limitaciones conocidas
 
