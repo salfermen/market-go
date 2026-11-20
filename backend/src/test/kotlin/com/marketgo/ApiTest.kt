@@ -136,4 +136,18 @@ class ApiTest {
         assertEquals(HttpStatusCode.Forbidden, call(HttpMethod.Get, "/stores/s1/orders", token = juan).first)
         assertEquals(HttpStatusCode.Unauthorized, call(HttpMethod.Get, "/orders/me").first)
     }
+
+    @Test
+    fun `cambiar contrasena con sesion pero no sin codigo`() = apiTest {
+        val juan = login("juan@marketgo.co")
+        val ramona = login("ramona@marketgo.co")
+        val body = """{"email":"juan@marketgo.co","password":"Nueva1234"}"""
+
+        assertEquals(HttpStatusCode.BadRequest, call(HttpMethod.Post, "/auth/recovery/reset", body).first, "sin sesión ni código")
+        assertEquals(HttpStatusCode.BadRequest, call(HttpMethod.Post, "/auth/recovery/reset", body, ramona).first, "token de otro usuario")
+        assertEquals(HttpStatusCode.OK, call(HttpMethod.Post, "/auth/recovery/reset", body, juan).first)
+
+        val (ok, _) = call(HttpMethod.Post, "/auth/login", """{"email":"juan@marketgo.co","password":"Nueva1234"}""")
+        assertEquals(HttpStatusCode.OK, ok)
+    }
 }

@@ -144,7 +144,7 @@ Los errores siempre responden `{ "message": "..." }` con el código HTTP corresp
 | POST | `/auth/register` | `{name, email, password, phone}` → `{user, token}` (100 puntos de bienvenida) |
 | POST | `/auth/recovery` | `{email, method: "email"\|"sms"}` → `{destination}`. El código se imprime en la consola del servidor |
 | POST | `/auth/recovery/verify` | `{email, code}` → `{ok}` (máx. 5 intentos, vence en 10 min) |
-| POST | `/auth/recovery/reset` | `{email, password}` → `{ok}` (solo después de verificar el código) |
+| POST | `/auth/recovery/reset` | `{email, password}` → `{ok}` (después de verificar el código, o con el token del mismo usuario: *Configuración › Cambiar contraseña*) |
 | PUT 🔒 | `/users/{id}` | Editar nombre, correo o celular (solo el propio usuario) |
 | POST 🔒 | `/users/{id}/store` | `{name, city}` crea la tienda del usuario → usuario con `storeId` |
 | DELETE 🔒 | `/users/{id}` | Eliminar la cuenta |

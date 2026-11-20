@@ -2,6 +2,7 @@ package com.marketgo.controllers
 
 import com.marketgo.models.*
 import com.marketgo.service.AuthService
+import com.marketgo.utils.userIdOrNull
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -26,5 +27,5 @@ class AuthController(private val service: AuthService) {
         call.respond(service.verifyRecoveryCode(call.receive<VerifyCodeRequest>()))
 
     suspend fun resetPassword(call: ApplicationCall) =
-        call.respond(service.resetPassword(call.receive<ResetPasswordRequest>()))
+        call.respond(service.resetPassword(call.receive<ResetPasswordRequest>(), call.userIdOrNull()))
 }

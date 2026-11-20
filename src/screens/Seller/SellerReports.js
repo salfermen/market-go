@@ -118,7 +118,7 @@ export default function SellerReports() {
         visible={exportInfo}
         variant="info"
         title="Exportación en desarrollo"
-        message="La descarga del reporte en PDF/Excel se habilitará cuando el backend en Ktor esté disponible."
+        message="La descarga del reporte en PDF/Excel estará disponible en una próxima versión."
         primaryText="Entendido"
         onClose={() => setExportInfo(false)}
       />

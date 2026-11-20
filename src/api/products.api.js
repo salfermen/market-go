@@ -5,7 +5,7 @@
 //   GET  /products/{id}/reviews              POST /products/{id}/reviews
 //   GET  /stores/{id}/products               POST /stores/{id}/products
 //   PUT  /products/{id}                      GET  /stores/{id}/reviews
-//   POST /reviews/{id}/reply
+//   POST /reviews/{id}/reply                GET  /vouchers
 
 import { request, toQuery, USE_MOCK, mockResponse, mockError } from './client';
 import { getDiscount } from '../utils/formatters';
@@ -14,6 +14,7 @@ import {
   categories as mockCategories,
   reviews as mockReviews,
   stores,
+  vouchers as mockVouchers,
 } from '../data/mockData';
 
 // "Base de datos" en memoria del modo simulado
@@ -71,6 +72,12 @@ export async function getProductById(id) {
 export async function getCategories() {
   if (!USE_MOCK) return request('/categories');
   return mockResponse(mockCategories, 200);
+}
+
+// Cupones vigentes y vencidos (la app decide cuáles se pueden aplicar)
+export async function getVouchers() {
+  if (!USE_MOCK) return request('/vouchers');
+  return mockResponse(mockVouchers, 200);
 }
 
 export async function getStore(storeId) {

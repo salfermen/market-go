@@ -15,9 +15,11 @@ import VoucherCard from '../../components/specific/VoucherCard';
 import useToast from '../../hooks/useToast';
 import { useShop } from '../../store/shopStore';
 import { useCart } from '../../store/cartStore';
-import { vouchers } from '../../data/mockData';
+import useAsync from '../../hooks/useAsync';
+import { getVouchers } from '../../api/products.api';
 
 const daysUntil = (date) => Math.ceil((new Date(`${date}T23:59`) - new Date()) / 86400000);
+const isExpired = (v) => Boolean(v.expires) && daysUntil(v.expires) < 0;
 
 // P-16 Cupones
 // selectMode (desde Carrito o Pago): al aplicar un cupón se regresa automáticamente.
@@ -28,6 +30,8 @@ export default function Voucher({ navigation, route }) {
   const { toast, showToast } = useToast();
   const [code, setCode] = useState('');
   const [codeError, setCodeError] = useState(null);
+  const { data } = useAsync(getVouchers, []);
+  const vouchers = data ?? [];
 
   const mine = vouchers.filter((v) => claimedVoucherIds.includes(v.id));
   const available = vouchers.filter((v) => !claimedVoucherIds.includes(v.id));
@@ -40,7 +44,11 @@ export default function Voucher({ navigation, route }) {
     }
     const found = vouchers.find((v) => v.code === clean);
     if (!found) {
-      setCodeError('Este código no existe o ya venció');
+      setCodeError('Este código no existe');
+      return;
+    }
+    if (isExpired(found)) {
+      setCodeError(`El cupón ${found.code} ya venció`);
       return;
     }
     if (claimedVoucherIds.includes(found.id)) {
@@ -94,14 +102,16 @@ export default function Voucher({ navigation, route }) {
       ) : (
         mine.map((v) => {
           const applied = cart.voucher?.id === v.id;
+          const expired = isExpired(v);
           return (
             <VoucherCard
               key={v.id}
               voucher={v}
               highlight={applied}
+              expired={expired}
               expiringSoon={daysUntil(v.expires) <= 10}
-              actionLabel={applied ? 'Aplicado' : 'Aplicar'}
-              actionDisabled={applied}
+              actionLabel={expired ? 'Vencido' : applied ? 'Aplicado' : 'Aplicar'}
+              actionDisabled={applied || expired}
               onAction={() => apply(v)}
               testID={`voucher-${v.id}`}
             />
@@ -112,7 +122,7 @@ export default function Voucher({ navigation, route }) {
       {available.length > 0 ? (
         <>
           <SectionHeader title="Disponibles para ti" style={styles.section} />
-          {available.map((v) => (
+          {available.filter((v) => !isExpired(v)).map((v) => (
             <VoucherCard
               key={v.id}
               voucher={v}

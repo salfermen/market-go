@@ -1,6 +1,8 @@
 package com.marketgo.routes
 
+import com.marketgo.config.AUTH_JWT
 import com.marketgo.controllers.AuthController
+import io.ktor.server.auth.*
 import io.ktor.server.routing.*
 
 // Rutas públicas de autenticación
@@ -11,6 +13,9 @@ fun Route.authRoutes(controller: AuthController) {
         post("/register") { controller.register(call) }
         post("/recovery") { controller.sendRecoveryCode(call) }
         post("/recovery/verify") { controller.verifyRecoveryCode(call) }
-        post("/recovery/reset") { controller.resetPassword(call) }
+        // Token opcional: con sesión iniciada (Configuración › Cambiar contraseña) no se pide código
+        authenticate(AUTH_JWT, optional = true) {
+            post("/recovery/reset") { controller.resetPassword(call) }
+        }
     }
 }

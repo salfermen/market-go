@@ -8,15 +8,15 @@ import { formatDate } from '../../utils/formatters';
 import { colors, radius } from '../../theme';
 
 // Cupón con borde punteado (diseño "ticket" del prototipo).
-export default function VoucherCard({ voucher, actionLabel, onAction, actionDisabled = false, highlight = false, expiringSoon = false, testID }) {
+export default function VoucherCard({ voucher, actionLabel, onAction, actionDisabled = false, highlight = false, expiringSoon = false, expired = false, testID }) {
   return (
-    <View style={[styles.card, highlight && styles.highlight]} testID={testID}>
+    <View style={[styles.card, highlight && styles.highlight, expired && styles.expired]} testID={testID}>
       <View style={styles.header}>
         <CustomText variant="smallBold" color="primary">
           Cupón
         </CustomText>
-        <CustomText variant="caption" style={{ color: expiringSoon ? colors.error : colors.textMuted }} weight={expiringSoon ? '700' : '500'}>
-          {expiringSoon ? 'Vence pronto · ' : 'Válido hasta '}
+        <CustomText variant="caption" style={{ color: expiringSoon || expired ? colors.error : colors.textMuted }} weight={expiringSoon || expired ? '700' : '500'}>
+          {expired ? 'Venció el ' : expiringSoon ? 'Vence pronto · ' : 'Válido hasta '}
           {formatDate(voucher.expires)}
         </CustomText>
       </View>
@@ -58,6 +58,9 @@ const styles = StyleSheet.create({
   },
   highlight: {
     backgroundColor: colors.primarySoft,
+  },
+  expired: {
+    opacity: 0.6,
   },
   header: {
     flexDirection: 'row',

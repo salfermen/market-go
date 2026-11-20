@@ -95,16 +95,24 @@ class AuthService(
         return OkResponse()
     }
 
-    suspend fun resetPassword(req: ResetPasswordRequest): OkResponse {
+    /**
+     * Cambia la contraseña en dos casos:
+     *  - Recuperación: el código enviado al correo/SMS ya fue verificado.
+     *  - Sesión iniciada: la petición trae el token del mismo usuario (Configuración › Cambiar contraseña).
+     */
+    suspend fun resetPassword(req: ResetPasswordRequest, requesterId: String? = null): OkResponse {
         Validation.requireEmail(req.email)
         Validation.requirePassword(req.password)
         val email = Validation.normalizeEmail(req.email!!)
-
-        val saved = recoveryCodes.findById(email)
-        if (saved == null || !saved.verified || saved.expiresAt < System.currentTimeMillis()) {
-            throw BadRequest("Primero verifica el código de recuperación")
-        }
         val user = users.findByEmail(email) ?: throw NotFound("No encontramos una cuenta con ese correo")
+
+        val isOwnSession = requesterId != null && requesterId == user.id
+        if (!isOwnSession) {
+            val saved = recoveryCodes.findById(email)
+            if (saved == null || !saved.verified || saved.expiresAt < System.currentTimeMillis()) {
+                throw BadRequest("Primero verifica el código de recuperación")
+            }
+        }
         users.update(user.id, mapOf("passwordHash" to hashPassword(req.password!!)))
         recoveryCodes.delete(email)
         return OkResponse()

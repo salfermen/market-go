@@ -79,6 +79,7 @@ npx expo start  # 3. App móvil
 - `npm run db` guarda los datos en `backend/.firestore-data` al cerrarlo con **Ctrl+C** y los recupera al volver a abrirlo. La primera vez, el backend la llena con los datos de demostración.
 - `npm run api` usa la base local mientras no exista la llave de Firebase. Para usar el proyecto real de Firebase, coloca `backend/serviceAccountKey.json` (ver [`backend/README.md`](backend/README.md)); entonces no necesitas `npm run db`.
 - Comprueba el backend en <http://localhost:8080/api/health> → `{"status":"ok"}`.
+- `npm run test:api` ejecuta los 39 casos de prueba de la API (sección 10 del documento) contra el backend en ejecución.
 
 En la terminal aparecerá un código QR y un menú:
 

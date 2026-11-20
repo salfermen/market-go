@@ -47,7 +47,7 @@ export default function EditInfo() {
         </View>
       </View>
       <CustomText variant="caption" color="textMuted" align="center" style={styles.hint}>
-        La foto de perfil se podrá subir cuando exista el backend.
+        La subida de foto de perfil estará disponible en una próxima versión.
       </CustomText>
 
       <InputField label="Nombre completo" icon={UserRound} testID="edit-name" {...form.getFieldProps('name')} />

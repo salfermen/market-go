@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "db": "node scripts/db.js",
-    "api": "node scripts/api.js"
+    "api": "node scripts/api.js",
+    "test:api": "node scripts/test-api.mjs"
   },
   "dependencies": {
     "@expo/metro-runtime": "~58.0.14",
