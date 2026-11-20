@@ -27,6 +27,7 @@ export function SellerProvider({ children }) {
   const [orders, setOrders] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [sales, setSales] = useState(null);
+  const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -39,9 +40,11 @@ export function SellerProvider({ children }) {
       ordersApi.getStoreOrders(storeId),
       productsApi.getStoreReviews(storeId),
       ordersApi.getSalesSummary(storeId),
+      productsApi.getStore(storeId),
     ])
-      .then(([p, o, r, s]) => {
+      .then(([p, o, r, s, st]) => {
         if (!active) return;
+        setStore(st);
         setProducts(p);
         setOrders(o);
         setReviews(r);
@@ -96,6 +99,7 @@ export function SellerProvider({ children }) {
     const averageRating = rated.length ? rated.reduce((s, r) => s + r.rating, 0) / rated.length : 0;
     return {
       storeId,
+      store,
       products,
       orders,
       reviews,
@@ -114,7 +118,7 @@ export function SellerProvider({ children }) {
       replyToReview,
       reload: () => setReloadKey((k) => k + 1),
     };
-  }, [storeId, products, orders, reviews, sales, loading, addProduct, editProduct, toggleProductActive, advanceOrder, replyToReview]);
+  }, [storeId, store, products, orders, reviews, sales, loading, addProduct, editProduct, toggleProductActive, advanceOrder, replyToReview]);
 
   return <SellerContext.Provider value={value}>{children}</SellerContext.Provider>;
 }

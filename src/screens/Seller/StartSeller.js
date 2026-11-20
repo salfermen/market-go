@@ -16,7 +16,6 @@ import StatusChip from '../../components/specific/StatusChip';
 import { useAuth } from '../../store/authStore';
 import { useSeller, ORDER_STATUS } from '../../store/sellerStore';
 import { formatCompactPrice, formatDateTime, formatNumber, formatPrice } from '../../utils/formatters';
-import { stores } from '../../data/mockData';
 import { colors, radius } from '../../theme';
 
 const STATUS_TONE = { new: 'error', preparing: 'warning', shipped: 'primary', delivered: 'success' };
@@ -25,7 +24,7 @@ const STATUS_TONE = { new: 'error', preparing: 'warning', shipped: 'primary', de
 export default function StartSeller({ navigation }) {
   const { user } = useAuth();
   const seller = useSeller();
-  const store = stores.find((s) => s.id === user.storeId);
+  const { store } = seller;
 
   if (seller.loading || !seller.sales) {
     return (

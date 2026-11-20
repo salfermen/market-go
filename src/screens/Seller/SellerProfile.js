@@ -11,7 +11,6 @@ import MenuItem from '../../components/common/MenuItem';
 import CustomModal from '../../components/common/CustomModal';
 import { useAuth } from '../../store/authStore';
 import { useSeller } from '../../store/sellerStore';
-import { stores } from '../../data/mockData';
 import { formatNumber } from '../../utils/formatters';
 import { colors, radius } from '../../theme';
 
@@ -20,7 +19,7 @@ export default function SellerProfile({ navigation }) {
   const { user, setMode, logout } = useAuth();
   const seller = useSeller();
   const [confirmLogout, setConfirmLogout] = useState(false);
-  const store = stores.find((s) => s.id === user.storeId);
+  const { store } = seller;
 
   return (
     <ScreenWrapper scroll background={colors.surface} header={<SellerHeader section="Perfil" title="Mi tienda" />} contentStyle={styles.content}>

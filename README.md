@@ -1,10 +1,10 @@
-# MarketGO — Frontend (React Native + Expo)
+# MarketGO — App móvil (React Native + Expo) y API (Ktor + Firestore)
 
 Aplicación móvil que funciona como tienda virtual: conecta a **vendedores pequeños o informales** con **clientes** que buscan sus productos. Centraliza el catálogo, la búsqueda y la gestión de pedidos para que cualquier emprendimiento pueda vender desde el celular.
 
 > Proyecto de la asignatura **Desarrollo de Aplicaciones Móviles** — Fundación Universitaria Konrad Lorenz.
 > Segunda entrega: análisis, diseño UX/UI e implementación inicial del frontend.
-> El backend en **Ktor** se integra en la siguiente entrega; por ahora la app usa **datos simulados**.
+> El backend en **Ktor + Firebase Firestore** está en la carpeta [`backend/`](backend/README.md). La app funciona con datos simulados (`EXPO_PUBLIC_USE_MOCK=true`) o contra la API real (`false`).
 
 **Equipo:** Laura Daniela Galindo Casallas · Salim Ferez Mendez · Juan Sebastián Salas Castillo
 
@@ -146,7 +146,22 @@ Pantallas → componentes + hooks + store → src/api → (USE_MOCK) mockData.js
 - **AppNavigator** decide el flujo según la sesión (`user`) y el modo (`client` / `seller`): al iniciar o cerrar sesión la navegación cambia sola.
 - **Las pantallas nunca llaman a `fetch` directamente**: usan funciones de `src/api`, que hoy responden con datos simulados y mañana con Ktor.
 
-## API prevista (Ktor)
+## Conectar la app con el backend
+
+1. Arranca la API (detalles en [`backend/README.md`](backend/README.md)):
+
+   ```bash
+   cd backend
+   ./gradlew run        # Windows: gradlew.bat run
+   ```
+
+   Necesita JDK 21 y la llave `backend/serviceAccountKey.json` de Firebase (no se sube a GitHub), o el emulador de Firestore.
+2. En la raíz del proyecto crea `.env` a partir de `.env.example` con `EXPO_PUBLIC_USE_MOCK=false` y la URL de la API.
+3. Reinicia Expo limpiando caché para que lea las variables: `npx expo start -c`.
+
+Usuarios de prueba (cargados por el *seed*): `ramona@marketgo.co` (tiene la tienda *Moda Ramona*) y `juan@marketgo.co`, ambos con contraseña `Market123`.
+
+## API (implementada en `backend/`)
 
 | Módulo | Endpoints |
 |---|---|
@@ -160,7 +175,7 @@ Todas las peticiones autenticadas envían `Authorization: Bearer <token>`.
 
 ## Limitaciones conocidas (entrega 2)
 
-- Los datos son simulados y se pierden al recargar la app (no hay persistencia).
+- En modo simulado los datos se pierden al recargar la app; con `EXPO_PUBLIC_USE_MOCK=false` se guardan en Firestore.
 - Las imágenes de productos son ilustraciones provisionales (ícono de la categoría); el backend entregará las fotos.
 - Pagos, notificaciones y exportación de reportes están simulados.
 

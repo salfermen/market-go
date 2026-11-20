@@ -1,0 +1,13 @@
+# Llave privada de Firebase: NUNCA subirla al repositorio
+serviceAccountKey.json
+**/serviceAccountKey.json
+*-firebase-adminsdk-*.json
+.env
+
+# Gradle / IntelliJ
+.gradle/
+build/
+.kotlin/
+.idea/
+*.iml
+out/
