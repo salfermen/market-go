@@ -66,6 +66,7 @@ Como el backend usa el **Admin SDK**, ignora las reglas de seguridad de Firestor
 la base directamente desde internet, deja las reglas cerradas:
 
 ```text
+// Archivo: backend/firestore.rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {

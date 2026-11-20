@@ -3,8 +3,8 @@
 Aplicación móvil que funciona como tienda virtual: conecta a **vendedores pequeños o informales** con **clientes** que buscan sus productos. Centraliza el catálogo, la búsqueda y la gestión de pedidos para que cualquier emprendimiento pueda vender desde el celular.
 
 > Proyecto de la asignatura **Desarrollo de Aplicaciones Móviles** — Fundación Universitaria Konrad Lorenz.
-> Segunda entrega: análisis, diseño UX/UI e implementación inicial del frontend.
-> El backend en **Ktor + Firebase Firestore** está en la carpeta [`backend/`](backend/README.md). La app funciona con datos simulados (`EXPO_PUBLIC_USE_MOCK=true`) o contra la API real (`false`).
+> Entrega final: frontend en React Native, backend en Ktor y base de datos en Cloud Firestore, integrados.
+> El backend en **Ktor + Firebase Firestore** está en la carpeta [`backend/`](backend/README.md). La app usa la API real por defecto; con `EXPO_PUBLIC_USE_MOCK=true` funciona con datos simulados, sin backend.
 
 **Equipo:** Laura Daniela Galindo Casallas · Salim Ferez Mendez · Juan Sebastián Salas Castillo
 
@@ -15,7 +15,7 @@ Aplicación móvil que funciona como tienda virtual: conecta a **vendedores pequ
 - **32 pantallas** con navegación funcional (autenticación, comprador, vendedor y compartidas).
 - **Dos modos en una misma cuenta:** comprador y vendedor (Perfil › *Mi tienda*).
 - **Formularios con validación visual:** registro, inicio de sesión, recuperación de contraseña, dirección, tarjeta, producto, reseñas, perfil, filtros y cupones.
-- **Carrito y checkout completos (simulados):** cantidades, cupones, envío estándar/express, métodos de pago (tarjeta, PSE, Nequi, contra entrega), pago aprobado o rechazado y seguimiento del envío.
+- **Carrito y checkout completos (pago simulado):** cantidades, cupones, envío estándar/express, métodos de pago (tarjeta, PSE, Nequi, contra entrega), pago aprobado o rechazado y seguimiento del envío.
 - **Panel del vendedor:** indicadores, gráfica de ventas, inventario (crear/editar/pausar productos), pedidos con cambio de estado, reportes y respuesta a reseñas.
 - **Capa de servicios lista para Ktor:** cambiar `EXPO_PUBLIC_USE_MOCK=false` hace que las pantallas consuman la API real sin modificarlas.
 
@@ -113,6 +113,27 @@ También puedes registrar una cuenta nueva: queda guardada en la base de datos.
 4. **Perfil** → Mis pedidos, Recompensas, Cupones, Editar información, Soporte, Configuración.
 5. **Perfil › Mi tienda** → panel del vendedor: agregar producto, avanzar un pedido, ventas, reportes y reseñas.
 
+## Base de datos (Cloud Firestore)
+
+Firestore es una base de datos NoSQL: no hay scripts SQL. Las colecciones (`users`, `stores`, `categories`, `products`, `reviews`, `orders`, `vouchers`, `counters`, `recoveryCodes`) se crean solas al guardar el primer documento, y **el backend carga los datos iniciales** desde [`backend/src/main/resources/seed/marketgo-seed.json`](backend/src/main/resources/seed/marketgo-seed.json) cuando la colección `users` está vacía (`SEED_DATA=true`).
+
+**Opción A — Base local (desarrollo y pruebas, sin configuración):**
+
+```bash
+npm run db    # emulador de Firestore en 127.0.0.1:8085 · panel en http://127.0.0.1:4000/firestore
+```
+
+Requiere Java y Node.js (la primera vez descarga el emulador). Los datos se guardan en `backend/.firestore-data` al cerrarlo con Ctrl+C. Mientras no exista la llave de Firebase, `npm run api` se conecta solo a esta base.
+
+**Opción B — Proyecto de Firebase (producción):**
+
+1. En [Firebase Console](https://console.firebase.google.com/) crea un proyecto y abre *Firestore Database › Crear base de datos* (modo producción).
+2. Publica las reglas de [`backend/firestore.rules`](backend/firestore.rules) (cierran el acceso directo; el backend usa el Admin SDK).
+3. En *Configuración del proyecto › Cuentas de servicio › Generar nueva clave privada*, descarga la llave y guárdala como `backend/serviceAccountKey.json` (está en `.gitignore`; nunca se sube).
+4. Ejecuta `npm run api`: el backend muestra “Firebase inicializado (proyecto …)” y carga los datos de demostración.
+
+No hace falta crear índices compuestos. Más detalles en [`backend/README.md`](backend/README.md).
+
 ## Build (exportar)
 
 ```bash
@@ -138,7 +159,7 @@ market-go/
     │   ├── layout/        # ScreenWrapper, encabezados, divisores, fondos
     │   ├── specific/      # Tarjetas de producto, carrito, pedido, gráficas…
     │   └── HelloCard.js   # Tarjeta de bienvenida
-    ├── data/mockData.js   # Datos simulados (reemplazados por Ktor después)
+    ├── data/mockData.js   # Datos del modo simulado (EXPO_PUBLIC_USE_MOCK=true)
     ├── hooks/             # useForm, useAsync, useDebounce, useToast, useCountdown
     ├── navigation/        # AppNavigator, AuthStack, ClientTabs, SellerTabs
     ├── screens/           # Auth (5), Client (11), Seller (7), Shared (9)
@@ -155,7 +176,7 @@ Pantallas → componentes + hooks + store → src/api → (USE_MOCK) mockData.js
 ```
 
 - **AppNavigator** decide el flujo según la sesión (`user`) y el modo (`client` / `seller`): al iniciar o cerrar sesión la navegación cambia sola.
-- **Las pantallas nunca llaman a `fetch` directamente**: usan funciones de `src/api`, que hoy responden con datos simulados y mañana con Ktor.
+- **Las pantallas nunca llaman a `fetch` directamente**: usan funciones de `src/api`, que llaman al backend Ktor (o a los datos simulados si `EXPO_PUBLIC_USE_MOCK=true`).
 
 ## API (implementada en `backend/`)
 
@@ -169,10 +190,10 @@ Pantallas → componentes + hooks + store → src/api → (USE_MOCK) mockData.js
 
 Todas las peticiones autenticadas envían `Authorization: Bearer <token>`.
 
-## Limitaciones conocidas (entrega 2)
+## Limitaciones conocidas
 
 - La base local (`npm run db`) es para desarrollo; en producción el backend debe usar un proyecto de Firebase con su llave.
-- Las imágenes de productos son ilustraciones provisionales (ícono de la categoría); el backend entregará las fotos.
+- Las imágenes de productos son ilustraciones provisionales (ícono de la categoría); la subida de fotos queda para una próxima versión.
 - Pagos, notificaciones y exportación de reportes están simulados.
 
 ## Solución de problemas
